@@ -39,6 +39,52 @@ module "vpc_west" {
   }
 }
 
+module "bastion" {
+  source = "./bastionHost"
+
+  instance_type = "t2.micro"
+  subnet_ids = ["${module.vpc.public_subnets}"]
+  security_group_ids = ["${aws_security_group.bastion.id}"]
+  public_ssh_key  = "${var.public_ssh_key}"
+  desired_capacity = 1
+  max_size = 1
+  min_size = 1
+  cooldown = 60
+  health_check_grace_period = 300
+
+  scale_up_cron = "0 9 * * *"
+  scale_up_min_size = 1
+  scale_up_max_size = 3
+  scale_up_desired_capacity = 2
+
+  scale_down_cron = "0 23 * * *"
+  scale_down_min_size = 1
+  scale_down_max_size = 1
+  scale_down_desired_capacity = 1
+
+  #enable_autoscaling = true
+}
+
+resource "aws_security_group" "bastion" {
+  name = "bastion"
+  description = "Security group used by the ec2 bastion host"
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  vpc_id = "${module.vpc.vpc_id}"
+}
+
 module "remoteStateS3" {
   source = "./remoteStateS3"
 }

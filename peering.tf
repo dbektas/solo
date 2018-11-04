@@ -25,9 +25,11 @@ resource "aws_route_table" "requester_peering_route" {
   vpc_id = "${module.vpc.vpc_id}"
 
   route {
-    cidr_block = "${var.vpc_private_subnets_cidr_west[0]}"
+    cidr_block = "${var.vpc_cidr_west}"
     vpc_peering_connection_id = "${aws_vpc_peering_connection.peer.id}"
   }
+
+
 }
 
 resource "aws_route_table" "accepter_peering_route" {
@@ -35,7 +37,7 @@ resource "aws_route_table" "accepter_peering_route" {
   vpc_id = "${module.vpc_west.vpc_id}"
 
   route {
-    cidr_block = "${var.vpc_private_subnets_cidr[0]}"
+    cidr_block = "${var.vpc_cidr}"
     vpc_peering_connection_id = "${aws_vpc_peering_connection_accepter.peer.id}"
   }
 }

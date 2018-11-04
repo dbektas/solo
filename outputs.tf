@@ -26,6 +26,10 @@ output "igw_id" {
   value = "${module.vpc.igw_id}"
 }
 
+output "default_security_group_id" {
+  value = "${module.vpc.default_security_group_id}"
+}
+
 output "private_subnets_west" {
   value = "${module.vpc_west.private_subnets}"
 }
