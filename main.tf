@@ -24,11 +24,11 @@ module "vpc_west" {
   source = "terraform-aws-modules/vpc/aws"
 
   name = "${var.vpc_name}"
-  cidr = "${var.vpc_cidr}"
+  cidr = "${var.vpc_cidr_west}"
 
-  azs             = ["${var.azs_west}"]
-  private_subnets = "${var.vpc_private_subnets_cidr}"
-  public_subnets  = "${var.vpc_public_subnets_cidr}"
+  azs             = ["${var.region_west}a", "${var.region_west}b", "${var.region_west}c"]
+  private_subnets = "${var.vpc_private_subnets_cidr_west}"
+  public_subnets  = "${var.vpc_public_subnets_cidr_west}"
 
   enable_nat_gateway = false
   enable_vpn_gateway = false
@@ -38,12 +38,6 @@ module "vpc_west" {
     Environment = "dev"
   }
 }
-
-/*
-module "vpc_peering" {
-  source           = "./vpcPeering"
-}
-*/
 
 module "remoteStateS3" {
   source = "./remoteStateS3"
