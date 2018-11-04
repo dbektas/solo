@@ -1,3 +1,7 @@
+module "remoteStateS3" {
+  source = "./remoteStateS3"
+}
+
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
@@ -43,7 +47,7 @@ module "bastion" {
   source = "./bastionHost"
 
   instance_type = "t2.micro"
-  subnet_ids = ["${module.vpc.public_subnets}"]
+  subnet_ids = ["${aws_subnet.public_subnet.id}"]
   security_group_ids = ["${aws_security_group.bastion.id}"]
   public_ssh_key  = "${var.public_ssh_key}"
   desired_capacity = 1
@@ -65,26 +69,73 @@ module "bastion" {
   #enable_autoscaling = true
 }
 
-resource "aws_security_group" "bastion" {
-  name = "bastion"
-  description = "Security group used by the ec2 bastion host"
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+module "bastion_west" {
+  providers = {
+    aws  = "aws.ireland"
   }
+  source = "./bastionHost"
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  instance_type = "t2.micro"
+  subnet_ids = ["${aws_subnet.public_subnet_west.id}"]
+  security_group_ids = ["${aws_security_group.bastion_west.id}"]
+  public_ssh_key  = "${var.public_ssh_key}"
+  desired_capacity = 1
+  max_size = 1
+  min_size = 1
+  cooldown = 60
+  health_check_grace_period = 300
 
-  vpc_id = "${module.vpc.vpc_id}"
+  scale_up_cron = "0 9 * * *"
+  scale_up_min_size = 1
+  scale_up_max_size = 3
+  scale_up_desired_capacity = 2
+
+  scale_down_cron = "0 23 * * *"
+  scale_down_min_size = 1
+  scale_down_max_size = 1
+  scale_down_desired_capacity = 1
+
+  #enable_autoscaling = true
 }
 
-module "remoteStateS3" {
-  source = "./remoteStateS3"
+resource "aws_security_group" "bastion" {
+  name = "bastionSG"
+  description = "For Bastion"
+  vpc_id = "${module.vpc.vpc_id}"
+
+  tags {
+    Name = "BastionSG"
+  }
+}
+
+resource "aws_security_group_rule" "bastion_ssh" {
+  type = "ingress"
+  from_port = "22"
+  to_port = "22"
+  protocol = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  #source_security_group_id = "${module.ecs.ecs_security_group}"
+  security_group_id = "${aws_security_group.bastion.id}"
+}
+
+resource "aws_security_group" "bastion_west" {
+  provider = "aws.ireland"
+  name = "bastionSG"
+  description = "For Bastion"
+  vpc_id = "${module.vpc_west.vpc_id}"
+
+  tags {
+    Name = "BastionSG"
+  }
+}
+
+resource "aws_security_group_rule" "bastion_west_ssh" {
+  provider = "aws.ireland"
+  type = "ingress"
+  from_port = "22"
+  to_port = "22"
+  protocol = "tcp"
+  cidr_blocks = ["${aws_subnet.public_subnet.cidr_block}"]
+  #source_security_group_id = "${module.ecs.ecs_security_group}"
+  security_group_id = "${aws_security_group.bastion_west.id}"
 }
