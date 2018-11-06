@@ -1,5 +1,5 @@
 resource "aws_key_pair" "bastion" {
-    key_name_prefix = "bastion-${data.aws_caller_identity.current.account_id}"
+    key_name_prefix = "bastionKey"
     public_key      = "${var.public_ssh_key}"
 }
 

@@ -103,19 +103,30 @@ resource "aws_security_group" "bastion" {
   description = "For Bastion"
   vpc_id = "${module.vpc.vpc_id}"
 
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    cidr_blocks = ["${aws_subnet.public_subnet_west.cidr_block}"]
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = -1
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+
   tags {
     Name = "BastionSG"
   }
-}
-
-resource "aws_security_group_rule" "bastion_ssh" {
-  type = "ingress"
-  from_port = "22"
-  to_port = "22"
-  protocol = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
-  #source_security_group_id = "${module.ecs.ecs_security_group}"
-  security_group_id = "${aws_security_group.bastion.id}"
 }
 
 resource "aws_security_group" "bastion_west" {
@@ -124,18 +135,28 @@ resource "aws_security_group" "bastion_west" {
   description = "For Bastion"
   vpc_id = "${module.vpc_west.vpc_id}"
 
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    cidr_blocks = ["${aws_subnet.public_subnet.cidr_block}"]
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = -1
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+
   tags {
     Name = "BastionSG"
   }
-}
-
-resource "aws_security_group_rule" "bastion_west_ssh" {
-  provider = "aws.ireland"
-  type = "ingress"
-  from_port = "22"
-  to_port = "22"
-  protocol = "tcp"
-  cidr_blocks = ["${aws_subnet.public_subnet.cidr_block}"]
-  #source_security_group_id = "${module.ecs.ecs_security_group}"
-  security_group_id = "${aws_security_group.bastion_west.id}"
 }
