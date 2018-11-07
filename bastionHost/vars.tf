@@ -29,15 +29,18 @@ variable "desired_capacity" {
 }
 
 variable "scale_up_min_size" {
-  type = "string"
+    type = "string"
+    description = "The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time."
 }
 
 variable "scale_up_max_size" {
-  type = "string"
+    type = "string"
+    description = "The maximum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the maximum size at the scheduled time."
 }
 
 variable "scale_up_desired_capacity" {
-  type = "string"
+    type = "string"
+    description = "The number of EC2 instances that should be running in the group. Default 0. Set to -1 if you don't want to change the desired capacity at the scheduled time."
 }
 
 variable "scale_down_desired_capacity" {
@@ -52,6 +55,7 @@ variable "scale_down_min_size" {
 
 variable "scale_down_max_size" {
   type = "string"
+  description = "Maximum number of bastion instances that can be running when scaling down"
 }
 
 variable "scale_up_cron" {
@@ -80,5 +84,6 @@ variable "subnet_ids" {
 }
 
 variable "enable_autoscaling" {
-  default = false
+    default = false
+    description = "Switch to enable autoscaling for bastion host. Default to false, option to switch in invoking script to true."
 }

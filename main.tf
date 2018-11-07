@@ -1,5 +1,7 @@
 module "remoteStateS3" {
   source = "./remoteStateS3"
+  region = "${var.region}"
+  versioning = true
 }
 
 module "vpc" {
