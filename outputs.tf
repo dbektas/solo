@@ -1,3 +1,7 @@
+output "bucket_remote_state" {
+  value = "${module.remoteStateS3.bucket-name}"
+}
+
 output "vpc_id" {
   value = "${module.vpc.vpc_id}"
 }

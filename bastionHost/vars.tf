@@ -1,3 +1,4 @@
+
 variable "instance_type" {
     type = "string"
     description = "Instance type to make the Bastion host from"
@@ -66,11 +67,6 @@ variable "scale_up_cron" {
 variable "scale_down_cron" {
     type = "string"
     description = "In UTC, when to scale down the bastion servers"
-}
-
-variable "public_ssh_key" {
-    type = "string"
-    description = "Public half of the SSH key to import into AWS"
 }
 
 variable "security_group_ids" {

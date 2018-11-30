@@ -1,13 +1,8 @@
-resource "aws_key_pair" "bastion" {
-    key_name_prefix = "bastionKey"
-    public_key      = "${var.public_ssh_key}"
-}
-
 resource "aws_launch_configuration" "bastion" {
     name_prefix                 = "bastion-"
     image_id                    = "${data.aws_ami.amazon_linux_ami.id}"
     instance_type               = "${var.instance_type}"
-    key_name                    = "${aws_key_pair.bastion.key_name}"
+    #key_name                    = "${aws_key_pair.bastion.key_name}"
     security_groups             = ["${var.security_group_ids}"]
     iam_instance_profile        = "${aws_iam_instance_profile.bastion_instance_profile.name}"
     user_data                   = "${element(data.template_file.user_data.*.rendered,0)}"
@@ -21,6 +16,7 @@ resource "aws_launch_configuration" "bastion" {
 
     associate_public_ip_address = true
     enable_monitoring           = true
+
     lifecycle {
         create_before_destroy = true
     }

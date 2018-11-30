@@ -1,4 +1,4 @@
-output "remote-state" {
-  value = "${aws_s3_bucket.remote-state.arn}"
-  description = "ARN of the bucket"
+output "bucket-name" {
+  value = "${aws_s3_bucket.remote-state.id}"
+  description = "Name of the bucket"
 }

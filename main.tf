@@ -51,7 +51,6 @@ module "bastion" {
   instance_type = "t2.micro"
   subnet_ids = ["${aws_subnet.public_subnet.id}"]
   security_group_ids = ["${aws_security_group.bastion.id}"]
-  public_ssh_key  = "${var.public_ssh_key}"
   desired_capacity = 1
   max_size = 1
   min_size = 1
@@ -80,7 +79,6 @@ module "bastion_west" {
   instance_type = "t2.micro"
   subnet_ids = ["${aws_subnet.public_subnet_west.id}"]
   security_group_ids = ["${aws_security_group.bastion_west.id}"]
-  public_ssh_key  = "${var.public_ssh_key}"
   desired_capacity = 1
   max_size = 1
   min_size = 1
